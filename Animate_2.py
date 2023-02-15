@@ -341,10 +341,6 @@ def all_headless(frame_count, frames, grid, viab_vir, cell_infect_count, overall
             filtered_virions += grid.cell_list[adj].virions*(1-(cell.filtration_percentage/100))
             grid.cell_list[adj].virions = 0
 
-    # for cell in grid.vent_inlet_cells:
-    #     filtered_virions += cell.virions*(1-(cell.filtration_percentage/100))
-    #     cell.virions = 0
-
     for Cell in grid.vent_outlet_cells:
         Cell.return_filtered_virions(filtered_virions, frame_count, grid)
 
@@ -372,49 +368,3 @@ def all_headless(frame_count, frames, grid, viab_vir, cell_infect_count, overall
     return overall_infect_count
 
 
-def all_headless_movement_german(frame_count, frames, grid, viab_vir, pop, pop_spawned, minutes_per_frame):
-    filtered_virions = 0
-    grid.spawn_people(frame_count, pop)
-
-    for pi in pop:
-        if pi.Spawned is False:
-            if pi.arrival_time < frame_count:
-                pi.Spawned = True
-                pop_spawned.append(pi)
-        if pi.Spawned is True and pi in pop_spawned:
-            if pi.arrival_time + pi.time_stayed < frame_count:
-                pi.Exiting = True
-                pop_spawned.remove(pi)
-                if pi.__class__ is agent.Susceptible:
-                    pi.Prob_of_Infection()
-
-    print(pop_spawned)
-
-    for Cell in grid.cell_list:
-        Cell.breathe_virions(minutes_per_frame, grid)
-
-    for Cell in grid.cell_list:
-        Cell.flow_move_virions(grid)
-        Cell.move_people(grid)
-
-    for cell in grid.vent_inlet_cells:
-        for adj in cell.adjacent_cells:
-            filtered_virions += grid.cell_list[adj].virions*(1-(cell.filtration_percentage/100))
-            grid.cell_list[adj].virions = 0
-
-    for Cell in grid.vent_outlet_cells:
-        Cell.return_filtered_virions(filtered_virions, frame_count, grid)
-
-    for Cell in grid.cell_list:                     # Do stuff with moving virions 2nd
-        Cell.spread_virions(grid, minutes_per_frame, viab_vir)
-
-    for Cell in grid.cell_list:                     # Transfer transient states to active states and color cells last
-        Cell.transient_states()
-
-    if frame_count == frames-1:  # check who became infected
-        infect_count = 0
-        for pi in pop:
-            if pi.__class__ is agent.Infected_Pre_Infectious:
-                infect_count += 1
-
-        return infect_count

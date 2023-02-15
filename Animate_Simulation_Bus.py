@@ -8,7 +8,10 @@ from matplotlib import animation
 import math
 import numpy as np
 
-## To run this code in terminal, use any of the Sim_Var methods as is. All numbers can be changed in the first Simulate method
+
+# To run this code in terminal, use any of the Sim_Var methods as is.
+# All numbers for Sim_Var methods can be changed in the Simulate method
+
 
 def Simulate(cough, sneeze, talk, ACH=60, filter_percentage=0, version='p'):
 
